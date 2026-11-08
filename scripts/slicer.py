@@ -19,7 +19,17 @@ import sys
 import time
 import uuid
 
-BRIDGE_DIR = os.environ.get("DSH_SLICER_BRIDGE") or r"D:\SlicerModules\bridge"
+_HERE = os.path.dirname(os.path.abspath(__file__))
+
+def _default_bridge():
+    """Where the bridge queue lives: explicit env, then the skill-local one (fresh installs),
+    then this machine's long-standing location."""
+    for candidate in (os.path.join(os.path.dirname(_HERE), "bridge"), r"D:\SlicerModules\bridge"):
+        if os.path.isdir(candidate):
+            return candidate
+    return r"D:\SlicerModules\bridge"
+
+BRIDGE_DIR = os.environ.get("DSH_SLICER_BRIDGE") or _default_bridge()
 SLICER_EXE = os.environ.get("DSH_SLICER_EXE") or r"D:\Slicer 5.12.4\Slicer.exe"
 INBOX = os.path.join(BRIDGE_DIR, "inbox")
 OUTBOX = os.path.join(BRIDGE_DIR, "outbox")
